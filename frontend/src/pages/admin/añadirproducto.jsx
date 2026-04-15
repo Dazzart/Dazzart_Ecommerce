@@ -1,0 +1,331 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+import SidebarAdmin from "../../components/SideBarAdmin.jsx";
+import { API, imgUrl } from '../../config/api';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import "../../css/CSSA/admin-global.css";
+
+export default function AñadirProducto() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    if (!usuario) {
+      window.location.replace("/");
+    }
+  }, []);
+
+  const [form, setForm] = useState({
+    numero_serial: "",
+    nombre: "",
+    descripcion: "",
+    precio: "",
+    stock: "",
+    id_categoria: "",
+    id_subcategoria: "",
+    fecha_creacion: new Date().toISOString().split("T")[0],
+  });
+
+  const [imagenNueva, setImagenNueva] = useState(null);
+  const [imagenSeleccionada, setImagenSeleccionada] = useState("");
+
+  const [categorias, setCategorias] = useState([]);
+  const [subcategorias, setSubcategorias] = useState([]);
+  const [imagenesExistentes, setImagenesExistentes] = useState([]);
+
+  useEffect(() => {
+    API.get(`categorias/listar`).then((res) => {
+      setCategorias(res.data || []);
+    });
+
+  }, []);
+
+  useEffect(() => {
+    if (form.id_categoria) {
+      API.get(`subcategorias/listar`).then((res) => {
+        const filtradas = res.data.filter(
+          (s) => String(s.id_categoria) === String(form.id_categoria)
+        );
+        setSubcategorias(filtradas);
+      });
+    } else {
+      setSubcategorias([]);
+    }
+  }, [form.id_categoria]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImagenNueva(file);
+      setImagenSeleccionada("");
+    }
+  };
+
+  const handleImageSelect = (imgName) => {
+    setImagenSeleccionada(imgName);
+    setImagenNueva(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const fd = new FormData();
+
+    Object.entries(form).forEach(([key, value]) => {
+      fd.append(key, value);
+    });
+
+    if (imagenNueva) {
+      fd.append("imagen", imagenNueva);
+    } else if (imagenSeleccionada) {
+      // Si no subes archivo, envías solo el nombre de la imagen
+      fd.append("imagen_nombre", imagenSeleccionada);
+    }
+
+    try {
+      await API.post(`productos/agregar`, fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      Swal.fire("Éxito", "Producto agregado correctamente", "success");
+      navigate("/admin-productos");
+    } catch (error) {
+      console.error("Error al agregar producto:", error);
+      Swal.fire("Error", "No se pudo agregar el producto", "error");
+    }
+  };
+
+  return (
+    <div className="d-flex">
+      <SidebarAdmin />
+      <main className="admin-main-wrapper">
+        <div className="page-header">
+          <h1>Añadir Producto</h1>
+          <button onClick={() => navigate('/admin-productos')} className="btn-pro btn-pro-outline-secondary" style={{ border: '1.5px solid #bdc3c7', background: 'transparent' }}>
+            Regresar
+          </button>
+        </div>
+
+        <div className="admin-card">
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
+            {/* Número Serial y Nombre */}
+            <div className="row">
+              <div className="col-md-6 form-group-pro">
+                <label className="form-label-pro">Número Serial</label>
+                <input
+                  type="text"
+                  name="numero_serial"
+                  value={form.numero_serial}
+                  onChange={handleChange}
+                  className="form-control-pro"
+                  required
+                />
+              </div>
+              <div className="col-md-6 form-group-pro">
+                <label className="form-label-pro">Nombre</label>
+                <input
+                  type="text"
+                  name="nombre"
+                  value={form.nombre}
+                  onChange={handleChange}
+                  className="form-control-pro"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Descripción */}
+            <div className="mb-3">
+              <label htmlFor="descripcion" className="form-label">
+                Descripción
+              </label>
+              <textarea
+                id="descripcion"
+                name="descripcion"
+                value={form.descripcion}
+                onChange={handleChange}
+                className="form-control"
+                rows={3}
+                required
+              />
+            </div>
+
+            {/* Precio y Stock en la misma fila */}
+            <div className="mb-3 d-flex gap-3">
+              <div style={{ flex: 1 }}>
+                <label htmlFor="precio" className="form-label">
+                  Precio
+                </label>
+                <input
+                  type="number"
+                  id="precio"
+                  name="precio"
+                  value={form.precio}
+                  onChange={handleChange}
+                  className="form-control"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+
+              <div style={{ flex: 1 }}>
+                <label htmlFor="stock" className="form-label">
+                  Stock
+                </label>
+                <input
+                  type="number"
+                  id="stock"
+                  name="stock"
+                  value={form.stock}
+                  onChange={handleChange}
+                  className="form-control"
+                  min="0"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Categoría */}
+            <div className="mb-3">
+              <label htmlFor="id_categoria" className="form-label">
+                Categoría
+              </label>
+              <select
+                id="id_categoria"
+                name="id_categoria"
+                value={form.id_categoria}
+                onChange={handleChange}
+                className="form-select"
+                required
+              >
+                <option value="">Selecciona categoría</option>
+                {categorias.map((cat) => (
+                  <option key={cat.id_categoria} value={cat.id_categoria}>
+                    {cat.nombre_categoria}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Subcategoría */}
+            <div className="mb-3">
+              <label htmlFor="id_subcategoria" className="form-label">
+                Subcategoría
+              </label>
+              <select
+                id="id_subcategoria"
+                name="id_subcategoria"
+                value={form.id_subcategoria}
+                onChange={handleChange}
+                className="form-select"
+                disabled={subcategorias.length === 0}
+              >
+                <option value="">
+                  {subcategorias.length === 0
+                    ? "Selecciona una categoría primero"
+                    : "Selecciona subcategoría"}
+                </option>
+                {subcategorias.map((s) => (
+                  <option key={s.id_subcategoria} value={s.id_subcategoria}>
+                    {s.nombre_subcategoria}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Fecha de Creación */}
+            <div className="mb-3">
+              <label htmlFor="fecha_creacion" className="form-label">
+                Fecha de Creación
+              </label>
+              <input
+                type="date"
+                id="fecha_creacion"
+                name="fecha_creacion"
+                value={form.fecha_creacion}
+                onChange={handleChange}
+                className="form-control"
+                required
+              />
+            </div>
+
+            {/* Subir nueva imagen */}
+            <div className="mb-3">
+              <label className="form-label">Subir imagen</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="form-control"
+              />
+            </div>
+
+            {/* Seleccionar imagen existente */}
+            <div className="mb-3">
+              <div className="d-flex flex-wrap gap-2">
+                {imagenesExistentes.map((img) => (
+                  <img
+                    key={img}
+                    src={imgUrl(img)}
+                    onClick={() => handleImageSelect(img)}
+                    alt={img}
+                    style={{
+                      width: "80px",
+                      height: "80px",
+                      border:
+                        imagenSeleccionada === img
+                          ? "3px solid blue"
+                          : "1px solid gray",
+                      cursor: "pointer",
+                      objectFit: "cover",
+                      borderRadius: "4px",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Vista previa */}
+            {(imagenNueva || imagenSeleccionada) && (
+              <div className="mb-3">
+                <strong>Vista previa:</strong>
+                <div>
+                  <img
+                    src={
+                      imagenNueva
+                        ? URL.createObjectURL(imagenNueva)
+                        : imgUrl(imagenSeleccionada)
+                    }
+                    alt="preview"
+                    style={{
+                      width: "150px",
+                      height: "150px",
+                      objectFit: "contain",
+                      marginTop: "10px",
+                    }}
+                    onError={(e) => (e.target.src = "/default.png")}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 pt-3 border-top text-end">
+              <button type="submit" className="btn-pro btn-pro-primary" style={{ padding: '12px 32px' }}>
+                <FontAwesomeIcon icon={faPlus} /> Guardar Producto
+              </button>
+            </div>
+          </form>
+        </div>
+      </main>
+    </div>
+  );
+}

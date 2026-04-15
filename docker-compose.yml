@@ -1,0 +1,69 @@
+services:
+  # BASE DE DATOS
+  db-dazzart:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=super
+      - POSTGRES_DB=dazzart_db
+    ports:
+      - "5432:5432"
+    volumes:
+      # Se recomienda usar la carpeta local para persistencia
+      - ./postgres_data:/var/lib/postgresql/data
+      # Este archivo SOLO se carga la PRIMERA VEZ que la carpeta postgres_data está vacía
+      - ./respaldo_dazzart.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d dazzart_db" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # PGADMIN (Interfaz para ver la BD)
+  pgadmin-dazzart:
+    image: dpage/pgadmin4
+    container_name: pgadmin-db
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db-dazzart
+
+  # BACKEND
+  backend-dazzart:
+    build: ./backend
+    container_name: backend-container
+    restart: on-failure # Reinicia si la conexión falla al principio
+    depends_on:
+      db-dazzart:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_HOST=db-dazzart # Nombre del servicio de arriba
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=super
+      - DB_NAME=dazzart_db
+      - JWT_SECRET=dazzart
+      - CORS_ORIGIN=http://localhost:8080
+
+  # FRONTEND
+  frontend-dazzart:
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_URL=http://localhost:3001/api
+    container_name: frontend-container
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend-dazzart
+
+volumes:
+  postgres_data:

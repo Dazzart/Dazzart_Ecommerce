@@ -1,0 +1,214 @@
+/* --- HEADER --- */
+header .btn {
+  color: #000000;
+  border-color: #ffffff;
+  font-size: 17px;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+header .btn-outline-info {
+  border-color: #ffffff;
+  color: #000000;
+}
+
+header .btn-outline-info:hover {
+  color: #9b9898;
+  background-color: transparent;
+  border-color: #9b9898;
+}
+
+header .btn-outline-warning {
+  border-color: #ffffff;
+  color: #000000;
+}
+
+header .input-group .form-control {
+  background-color: #ffffff;
+  color: #000000;
+  border-color: #000000;
+}
+
+header .input-group button {
+  background-color: transparent;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+header .btn:hover {
+  background-color: #80808000;
+  color: #1370bd;
+  border-color: #00000000;
+}
+
+/* Logo estilo retro */
+.text-logo {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #111;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.text-logo span {
+  color: #000000;
+}
+
+/* Barra de búsqueda */
+.search-wrapper {
+  position: relative;
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  width: 260px;
+  height: 40px;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+}
+
+.search-icon {
+  color: #333;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+/* ========================================
+   RESPONSIVE STYLES
+   ======================================== */
+
+/* Mobile styles (< 768px) */
+@media (max-width: 767.98px) {
+  .site-header {
+    padding: 0.75rem 0 !important;
+  }
+
+  .site-header .container-fluid {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .site-header .row {
+    row-gap: 0.75rem;
+  }
+
+  /* Logo smaller on mobile */
+  .text-logo {
+    font-size: 8px !important;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  /* Search wrapper full width on mobile */
+  .search-wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    height: 38px;
+  }
+
+  /* Layout control for mobile */
+  .site-header .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  /* Logo - order 1, stays left */
+  .site-header .row>.col-auto:first-child {
+    order: 1;
+    flex: 0 0 auto;
+  }
+
+  /* Menu button - order 2, next to logo */
+  .site-header .row>.col-auto:nth-child(2) {
+    order: 2;
+    flex: 0 0 auto;
+  }
+
+  /* User/Cart icons - order 3, push to right */
+  .site-header .row>.col-auto:last-child {
+    order: 3;
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+
+  /* Search bar - order 4, full width new row */
+  .site-header .row>.col:has(.search-wrapper) {
+    order: 4;
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Reduce button sizes */
+  header .btn {
+    font-size: 16px;
+    padding: 0.4rem 0.7rem;
+  }
+
+  /* User menu dropdown */
+  .user-menu-dropdown {
+    right: 0 !important;
+    left: auto !important;
+    min-width: 200px !important;
+  }
+}
+
+/* Very small mobile (< 400px) */
+@media (max-width: 399.98px) {
+  .site-header {
+    padding: 0.5rem 0 !important;
+  }
+
+  .site-header .container-fluid {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .text-logo {
+    font-size: 7px !important;
+  }
+
+  header .btn {
+    font-size: 15px;
+    padding: 0.35rem 0.6rem;
+  }
+
+  .search-wrapper {
+    padding: 6px 10px;
+    height: 36px;
+  }
+
+  .search-input {
+    font-size: 13px;
+  }
+}
+
+/* Tablet styles (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .text-logo {
+    font-size: 9px;
+  }
+
+  .search-wrapper {
+    width: 220px;
+  }
+}
+
+/* Desktop (>= 992px) - original styles maintained */
+@media (min-width: 992px) {
+  .search-wrapper {
+    width: 260px;
+  }
+}

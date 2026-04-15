@@ -1,0 +1,36 @@
+.carrusel-contenedor {
+  width: 100%;
+  max-width: 2400px;
+}
+
+.carousel-image {
+  height: 450px;
+  /* Ajusta la altura aquí */
+  object-fit: cover;
+  border-radius: px;
+}
+
+/* ========================================
+   RESPONSIVE STYLES
+   ======================================== */
+
+/* Tablet (< 992px) */
+@media (max-width: 991.98px) {
+  .carousel-image {
+    height: 350px;
+  }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 767.98px) {
+  .carousel-image {
+    height: 250px;
+  }
+}
+
+/* Very small mobile (< 480px) */
+@media (max-width: 479.98px) {
+  .carousel-image {
+    height: 200px;
+  }
+}

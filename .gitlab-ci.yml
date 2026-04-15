@@ -1,0 +1,36 @@
+stages:
+  - deploy
+
+deploy_to_aws:
+  stage: deploy
+  tags:
+    - DazzartKiki
+  
+  before_script:
+    - echo "--- Asegurando permisos antes del despliegue ---"
+    - sudo chown -R gitlab-runner:gitlab-runner .
+    
+  script:
+    - echo "--- 1. DESPLEGANDO FRONTEND ---"
+    - cd frontend
+    - npm install --no-audit --no-fund --prefer-offline
+    - NODE_OPTIONS="--max-old-space-size=1024" npm run build
+    - sudo rm -rf /var/www/html/*
+    - sudo cp -r dist/* /var/www/html/
+    - sudo chown -R nginx:nginx /var/www/html
+
+    - echo "--- 2. DESPLEGANDO BACKEND ---"
+    - cd ../backend
+    - npm install --no-audit --no-fund --prefer-offline
+    
+    - echo "--- 3. GESTIONANDO PM2 ---"
+    # Apuntamos a la ruta exacta del archivo
+    - pm2 startOrRestart src/config/ecosystem.config.js --update-env
+    - pm2 save
+
+    - echo "--- 4. REINICIANDO NGINX ---"
+    - sudo systemctl restart nginx
+
+  only:
+    - main
+    - arregla

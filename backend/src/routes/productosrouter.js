@@ -1,0 +1,44 @@
+const express = require('express');
+const router = express.Router();
+const productoController = require('../controllers/productosController');
+const upload = require('../middlewares/upload'); // multer configurado para subir imágenes
+const fs = require('fs');
+const path = require('path');
+const auth = require('../middlewares/auth');
+
+// Obtener todos los productos
+router.get('/listar', productoController.listarProductos);
+
+// Listar imágenes existentes en la carpeta pública (DEBE IR ANTES DE /:id)
+router.get('/listar-imagenes', productoController.listarImagenes);
+
+// Servir imagen individual
+router.get('/imagen/:nombre', (req, res) => {
+  const imgDir = path.join(__dirname, '../public/img');
+  const imagenPath = path.join(imgDir, req.params.nombre);
+
+  // Seguridad: evitar path traversal
+  if (!imagenPath.startsWith(imgDir)) {
+    return res.status(403).json({ error: 'Acceso denegado' });
+  }
+
+  res.sendFile(imagenPath, (err) => {
+    if (err) {
+      res.status(404).json({ error: 'Imagen no encontrada' });
+    }
+  });
+});
+
+// Obtener un producto por ID
+router.get('/:id', productoController.obtenerProducto);
+
+// Agregar un nuevo producto (con posible imagen)
+router.post('/agregar', auth, upload.single('imagen'), productoController.agregarProducto);
+
+// Editar un producto (con posible cambio de imagen)
+router.put('/editar/:id', auth, upload.single('imagen'), productoController.actualizarProducto);
+
+// Eliminar producto y su imagen si existe
+router.delete('/eliminar/:id', auth, productoController.eliminarProducto);
+
+module.exports = router;

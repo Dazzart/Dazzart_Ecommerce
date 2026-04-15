@@ -1,0 +1,113 @@
+/* --- ESTILOS GENERALES DE LAS TARJETAS --- */
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.card-header {
+  background: linear-gradient(90deg, #343a40 60%, #ffc107 100%);
+  color: white;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.card-body {
+  background-color: #fff;
+}
+
+.card-title {
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+/* --- BOTONES --- */
+.btn {
+  border-radius: 6px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* --- SECCIÓN DE CARRITO --- */
+.carrito-section {
+  background-color: #fff;
+}
+
+/* --- RESUMEN DE COMPRA --- */
+.resumen-compra .card {
+  padding: 20px;
+}
+
+/* --- PRODUCTOS EN CARRITO --- */
+.list-group-item {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+/* --- RECOMENDACIONES --- */
+.recomendados-section {
+  background-color: #f9f9f9;
+  border-top: 1px solid #ddd;
+  padding: 30px;
+}
+
+.recomendados-section .card {
+  border: 1px solid #eaeaea;
+  transition: transform 0.2s ease;
+}
+
+.recomendados-section .card:hover {
+  transform: translateY(-5px);
+}
+
+.recomendados-section .card-img-top {
+  height: 150px;
+  object-fit: contain;
+}
+
+.recomendados-section .card-body {
+  text-align: center;
+}
+
+/* ========================================
+   RESPONSIVE STYLES
+   ======================================== */
+
+/* Mobile (< 768px) */
+@media (max-width: 767.98px) {
+  .card-header {
+    font-size: 1rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+  .recomendados-section {
+    padding: 20px 15px;
+  }
+
+  .recomendados-section .card-img-top {
+    height: 120px;
+  }
+}
+
+/* Very small mobile (< 480px) */
+@media (max-width: 479.98px) {
+  .card-header {
+    font-size: 0.95rem;
+    padding: 0.75rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .resumen-compra .card {
+    padding: 15px;
+  }
+}
